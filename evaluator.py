@@ -55,9 +55,9 @@ def load_ground_truth():
 
     if count == 0:
         # Create sample ground truth data
-        test_df = pd.read_csv('gtruth_df.csv')
+        test_df = pd.read_csv('gtruth.csv')
         ground_truth = pd.DataFrame({
-            'id': list(test_df["Id"]),
+            'id': list(test_df["id"]),
             'target': list(test_df["target"])
         })
         
