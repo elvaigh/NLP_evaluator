@@ -144,8 +144,8 @@ def calculate_f1_score(y_true, y_pred):
     
     # precision = tp / (tp + fp) if (tp + fp) > 0 else 0
     # recall = tp / (tp + fn) if (tp + fn) > 0 else 0
-    precision = precision_score(y_true, y_pred) 
-    recall = recall_score(y_true, y_pred)
+    precision = precision_score(y_true, y_pred, average="weighted") 
+    recall = recall_score(y_true, y_pred, average="weighted")
     
     f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
     return f1
