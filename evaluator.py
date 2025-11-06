@@ -412,7 +412,8 @@ else:  # Ground Truth Info
         total = len(st.session_state.ground_truth)
         st.write(f"Class 0: {class_counts.get(0, 0)} ({class_counts.get(0, 0)/total*100:.1f}%)")
         st.write(f"Class 1: {class_counts.get(1, 0)} ({class_counts.get(1, 0)/total*100:.1f}%)")
-    
+        st.write(f"Class 5: {class_counts.get(5, 0)} ({class_counts.get(5, 0)/total*100:.1f}%)")
+        st.write("...")
     with col2:
         st.subheader("Sample IDs")
         st.write(f"IDs range from {st.session_state.ground_truth['id'].min()} to {st.session_state.ground_truth['id'].max()}")
