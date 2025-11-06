@@ -1,1 +1,5 @@
-pip install scikit-learn==0.22.1
+pip install scikit-learn
+pip install pandas
+pip install numpy
+pip install streamlit
+pip install sqlite3
