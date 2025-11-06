@@ -5,7 +5,7 @@ from datetime import datetime
 import hashlib
 import sqlite3
 import json
-
+from sklearn.metrics import accuracy_score, precision_score, recall_score
 # Configure page
 st.set_page_config(page_title="Prediction Submission System", layout="wide")
 
@@ -138,12 +138,14 @@ def calculate_accuracy(y_true, y_pred):
     return np.mean(y_true == y_pred)
 
 def calculate_f1_score(y_true, y_pred):
-    tp = np.sum((y_true == 1) & (y_pred == 1))
-    fp = np.sum((y_true == 0) & (y_pred == 1))
-    fn = np.sum((y_true == 1) & (y_pred == 0))
+    # tp = np.sum((y_true == 1) & (y_pred == 1))
+    # fp = np.sum((y_true == 0) & (y_pred == 1))
+    # fn = np.sum((y_true == 1) & (y_pred == 0))
     
-    precision = tp / (tp + fp) if (tp + fp) > 0 else 0
-    recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+    # precision = tp / (tp + fp) if (tp + fp) > 0 else 0
+    # recall = tp / (tp + fn) if (tp + fn) > 0 else 0
+    precision = precision_score(y_true, y_pred) 
+    recall = recall_score(y_true, y_pred)
     
     f1 = 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0
     return f1
@@ -160,7 +162,7 @@ def evaluate_submission(submission_df, ground_truth_df):
         y_true = merged['target_true'].values
         y_pred = merged['target_pred'].values
         
-        accuracy = calculate_accuracy(y_true, y_pred)
+        accuracy = accuracy_score(y_true, y_pred)
         f1 = calculate_f1_score(y_true, y_pred)
         
         return {'accuracy': accuracy, 'f1_score': f1}, None
