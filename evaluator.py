@@ -5,7 +5,8 @@ from datetime import datetime
 import hashlib
 import sqlite3
 import json
-# from sklearn.metrics import accuracy_score, precision_score, recall_score
+import re
+
 # Configure page
 st.set_page_config(page_title="Prediction Submission System", layout="wide")
 
@@ -133,6 +134,13 @@ def get_user_count():
     c.execute("SELECT COUNT(DISTINCT username) FROM submissions")
     return c.fetchone()[0]
 
+# Username display function
+def format_username_display(username):
+    """Replace username with 'con(ne)' if not alphanumeric"""
+    if username and not re.match(r'^[a-zA-Z0-9]+$', username):
+        return "con(ne)"
+    return username
+
 # Scoring functions
 def calculate_accuracy(y_true, y_pred):
     return np.mean(y_true == y_pred)
@@ -213,7 +221,9 @@ if st.session_state.user_id is None:
             else:
                 st.error("Please enter a username")
 else:
-    st.sidebar.success(f"👤 Logged in as: **{st.session_state.user_id}**")
+    # Apply username formatting for display only
+    display_username = format_username_display(st.session_state.user_id)
+    st.sidebar.success(f"👤 Logged in as: **{display_username}**")
     if st.sidebar.button("Logout"):
         st.session_state.user_id = None
         st.rerun()
@@ -390,13 +400,14 @@ elif page == "Leaderboard":
         # Add rank
         leaderboard.insert(0, 'Rank', range(1, len(leaderboard) + 1))
         
-        # Format display
+        # Format display - apply username formatting
         display_df = leaderboard[['Rank', 'username', 'f1_score', 'accuracy', 'timestamp']].copy()
+        display_df['username'] = display_df['username'].apply(format_username_display)
         display_df.columns = ['Rank', 'Username', 'F1 Score', 'Accuracy', 'Last Submission']
         
         # Highlight current user
         def highlight_user(row):
-            if st.session_state.user_id and row['Username'] == st.session_state.user_id:
+            if st.session_state.user_id and row['Username'] == format_username_display(st.session_state.user_id):
                 return ['background-color: #90EE90'] * len(row)
             return [''] * len(row)
         
@@ -411,7 +422,8 @@ elif page == "Leaderboard":
         
         # Show your rank if logged in
         if st.session_state.user_id:
-            user_rank = leaderboard[leaderboard['username'] == st.session_state.user_id]
+            display_user_id = format_username_display(st.session_state.user_id)
+            user_rank = display_df[display_df['Username'] == display_user_id]
             if len(user_rank) > 0:
                 rank = user_rank.index[0] + 1
                 st.info(f"🎯 Your current rank: **#{rank}** out of {len(leaderboard)} participants")
@@ -444,7 +456,6 @@ else:  # Ground Truth Info
         st.subheader("Preview")
         st.dataframe(st.session_state.ground_truth.head(10), use_container_width=True)
     
-
 
 # Footer
 st.markdown("---")
